@@ -266,7 +266,7 @@ class Builder
             if (in_array($key, $libraries)) {
                 return $value;
             }
-            return;
+            return $value === null;
         }
        
         if ($type) {
@@ -274,7 +274,7 @@ class Builder
                 if (in_array($key, $libraries) && array_key_exists($type, $value)) {
                     return $value[$type];
                 }
-                return;
+                return $value === null;
             }
         }
         
