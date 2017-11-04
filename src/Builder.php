@@ -266,16 +266,16 @@ class Builder
             if (in_array($key, $libraries)) {
                 return $value;
             }
-            return $value === null;
-        }
+            return;
+        };
        
         if ($type) {
             $map =  function ($value, $key) use ($libraries, $type) {
                 if (in_array($key, $libraries) && array_key_exists($type, $value)) {
                     return $value[$type];
                 }
-                return $value === null;
-            }
+                return;
+            };
         }
         
         $final_assets = collect($assets)->map($map)->reject(function ($value) {
