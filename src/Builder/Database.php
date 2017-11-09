@@ -219,7 +219,8 @@ class Database extends Chart
         $year = $year ?: date('Y');
 
         $begin = (new Date('00:00:00'))->setDate($year, $month, $day);
-        $end = (clone $begin)->modify('+1 day');
+        $clonedBegin = clone $begin;
+        $end = $clonedBegin->modify('+1 day');
 
         $daterange = new \DateInterval($begin, new \DateInterval('PT1H'), $end);
         foreach ($daterange as $date) {
@@ -258,7 +259,8 @@ class Database extends Chart
         $year = $year ?: date('Y');
 
         $begin = (new Date('00:00:00'))->setDate($year, $month, 1);
-        $end = (clone $begin)->modify('+1 month');
+        $clonedBegin = clone $begin;
+        $end = $clonedBegin->modify('+1 month');
 
         $daterange = new \DatePeriod($begin, new \DateInterval('P1D'), $end);
         foreach ($daterange as $date) {
@@ -295,7 +297,8 @@ class Database extends Chart
         $year = $year ?: date('Y');
 
         $begin = (new Date('00:00:00'))->setDate($year, 1, 1);
-        $end = (clone $begin)->modify('+1 year');
+        $clonedBegin = clone $begin;
+        $end = $clonedBegin->modify('+1 year');
 
         $daterange = new \DatePeriod($begin, new \DateInterval('P1M'), $end);
         foreach ($daterange as $date) {
@@ -330,7 +333,8 @@ class Database extends Chart
         $today = new Date();
 
         for ($i = 0; $i < $number; $i++) {
-            $date = (clone $today)->modify('-' . $i . ' years');
+            $clonedToday = clone $today;
+            $date = $clonedToday->modify('-' . $i . ' years');
 
             $label = $date->format($format);
             $value = $this->getCheckDateValue($date, $format, $label);
@@ -399,12 +403,15 @@ class Database extends Chart
         $labels = [];
         $values = [];
 
-        $format = 'd-m-Y';
+        //$format = 'd-m-Y';
+        $format = 'Y-m-d';
+
         Date::setLocale($this->language);
 
         $today = new Date();
         for ($i = 0; $i < $number; $i++) {
-            $date = (clone $today)->modify('-' . $i . ' days');
+            $clonedDate = clone $today;
+            $date = $clonedDate->modify('-' . $i . ' days');
 
             $label = ucfirst($date->format($fancy ? $this->date_format : $format));
 
@@ -438,7 +445,8 @@ class Database extends Chart
 
         $today = (new Date())->modify('fist day of month');
         for ($i = 0; $i < $number; $i++) {
-            $date = (clone $today)->modify('-' . $i . ' months');
+            $clonedToday = clone $today;
+            $date = $clonedToday->modify('-' . $i . ' months');
 
             $label = ucfirst($date->format($fancy ? $this->month_format : $format));
 
@@ -480,13 +488,18 @@ class Database extends Chart
         $data = $this->data;
 
         $filter_function = function ($value) use ($checkDate, $date_column, $formatToCheck) {
-            return $checkDate->format($formatToCheck) == (new \DateTimeImmutable($value->$date_column))->format($formatToCheck);
+            return $checkDate == date($formatToCheck, strtotime($value->$date_column));
         };
 
         if ($this->preaggregated) {
+
             // Since the column has been preaggregated, we only need one record that matches the search
-            $valueData = $data->first($filter_function);
-            $value = $valueData !== null ? $valueData->aggregate : 0;
+            $valueData = $data->filter(function ($value) use ($checkDate, $date_column, $formatToCheck) {
+                return $checkDate->format('Y-m-d') == date($formatToCheck, strtotime($value->$date_column));
+            });
+
+            $value = $valueData->first() !== null ? $valueData->first()->aggregate  : 0;
+
         } else {
             // Set the data represented. Return the relevant value.
             $valueData = $data->filter($filter_function);

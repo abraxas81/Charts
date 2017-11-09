@@ -250,14 +250,14 @@ class Builder
     private static function getAssets($libraries = [], $type = [])
     {
         $assets = config('charts.assets');
-        
+
         if (! $libraries) {
             $libraries = [];
             foreach ($assets as $key => $value) {
                 array_push($libraries, $key);
             }
         }
-        
+
         if ($libraries && is_string($libraries)) {
             $libraries = explode(',', $libraries);
         }
@@ -266,21 +266,21 @@ class Builder
             if (in_array($key, $libraries)) {
                 return $value;
             }
-            return;
+            return $value === null;
         };
-       
+
         if ($type) {
             $map =  function ($value, $key) use ($libraries, $type) {
                 if (in_array($key, $libraries) && array_key_exists($type, $value)) {
                     return $value[$type];
                 }
-                return;
+                return $value === null;
             };
         }
         
         $final_assets = collect($assets)->map($map)->reject(function ($value) {
-                return $value === null;
-            })->toArray();
+            return $value === null;
+        })->toArray();
 
         // return all libraries
         return static::buildIncludeTags($final_assets);
