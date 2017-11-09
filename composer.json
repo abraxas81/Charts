@@ -12,8 +12,7 @@
         "php": ">=5.5.9",
         "illuminate/support": "5.*",
         "jlawrence/eos": "3.*",
-        "jenssegers/date": "v3.*",
-        "consoletvs/support": "^2.1.2"
+        "jenssegers/date": "v3.*"
     },
     "autoload": {
         "psr-4": {
