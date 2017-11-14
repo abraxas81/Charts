@@ -1,6 +1,6 @@
 {
     "name": "abraxas81/charts",
-    "description": "Create charts for laravel using different charts libraries",
+    "description": "Modified for php 5.6.4",
     "license": "MIT",
     "authors": [
         {
