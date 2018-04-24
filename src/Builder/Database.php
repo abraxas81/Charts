@@ -210,25 +210,16 @@ class Database extends Chart
     {
         $labels = [];
         $values = [];
-
-        $format = 'd-m-Y H:00:00';
-        Date::setLocale($this->language);
-
-        $day = $day ?: date('d');
-        $month = $month ?: date('m');
-        $year = $year ?: date('Y');
-
-        $begin = (new Date('00:00:00'))->setDate($year, $month, $day);
-        $clonedBegin = clone $begin;
-        $end = $clonedBegin->modify('+1 day');
-
-        $daterange = new \DateInterval($begin, new \DateInterval('PT1H'), $end);
-        foreach ($daterange as $date) {
-
-            $label = ucfirst($date->format($fancy ? $this->hour_format : $format));
-
-            $value = $this->getCheckDateValue($date, $format, $label);
-
+        $day = $day ? $day : date('d');
+        $month = $month ? $month : date('m');
+        $year = $year ? $year : date('Y');
+        for ($i = 0; $i < 24; $i++) {
+            $hour = ($i < 10) ? "0$i" : "$i";
+            $date_get = $fancy ? $this->hour_format : 'd-m-Y H:00:00';
+            Date::setLocale($this->language);
+            $label = ucfirst(Date::create($year, $month, $day, $hour)->format($date_get));
+            $checkDate = "$year-$month-$day $hour:00:00";
+            $value = $this->getCheckDateValue($checkDate, 'Y-m-d H:00:00', $label);
             array_push($labels, $label);
             array_push($values, $value);
         }
