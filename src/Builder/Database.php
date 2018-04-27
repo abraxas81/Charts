@@ -206,15 +206,15 @@ class Database extends Chart
      *
      * @return Database
      */
-    public function groupByHour($day = null, $month = null, $year = null, $fancy = false)
+    public function groupByHour($from = 0, $to = 25, $day = null, $month = null, $year = null, $fancy = false)
     {
         $labels = [];
         $values = [];
         $day = $day ? $day : date('d');
         $month = $month ? $month : date('m');
         $year = $year ? $year : date('Y');
-        for ($i = 0; $i < 24; $i++) {
-            $hour = ($i < 10) ? "0$i" : "$i";
+        for ($from; $from < $to; $from++) {
+            $hour = ($from < 10) ? "0$from" : "$from";
             $date_get = $fancy ? $this->hour_format : 'd-m-Y H:00:00';
             Date::setLocale($this->language);
             $label = ucfirst(Date::create($year, $month, $day, $hour)->format($date_get));
@@ -473,7 +473,7 @@ class Database extends Chart
      * @param string $label
      * @return mixed
      */
-    private function getCheckDateValue(\DateTimeInterface $checkDate, $formatToCheck, $label)
+    private function getCheckDateValue($checkDate, $formatToCheck, $label)
     {
         $date_column = $this->date_column;
         $data = $this->data;
