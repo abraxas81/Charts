@@ -475,6 +475,7 @@ class Database extends Chart
      */
     private function getCheckDateValue($checkDate, $formatToCheck, $label)
     {
+        //modified
         $date_column = $this->date_column;
         $data = $this->data;
 
